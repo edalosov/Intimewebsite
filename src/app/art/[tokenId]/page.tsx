@@ -6,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import { AnswerPanel, type AnswerHistoryEntry } from "@/components/AnswerPanel";
+import { VerifyWalletPrompt } from "@/components/VerifyWalletPrompt";
+import { useWalletVerification } from "@/hooks/useWalletVerification";
 import type { OwnedToken } from "@/lib/alchemy";
 
 type DetailState =
@@ -21,22 +23,25 @@ type DetailState =
 export default function ArtDetailPage() {
   const params = useParams<{ tokenId: string }>();
   const router = useRouter();
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
+  const { status: verification, error: verifyError, verify } = useWalletVerification();
   const [state, setState] = useState<DetailState>({ status: "loading" });
 
   useEffect(() => {
     if (!isConnected) {
       router.replace("/");
-      return;
     }
-    if (!address) return;
+  }, [isConnected, router]);
+
+  useEffect(() => {
+    if (verification !== "verified") return;
 
     let cancelled = false;
-    // Reset to loading whenever the token or wallet changes, before the fetch below resolves.
+    // Reset to loading whenever the token changes, before the fetch below resolves.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setState({ status: "loading" });
 
-    fetch(`/api/art/${params.tokenId}?address=${address}`)
+    fetch(`/api/art/${params.tokenId}`)
       .then(async (res) => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to load artwork");
@@ -54,7 +59,15 @@ export default function ArtDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [params.tokenId, address, isConnected, router]);
+  }, [params.tokenId, verification]);
+
+  if (!isConnected) {
+    return null;
+  }
+
+  if (verification !== "verified") {
+    return <VerifyWalletPrompt status={verification} error={verifyError} onVerify={verify} />;
+  }
 
   if (state.status === "loading") {
     return (

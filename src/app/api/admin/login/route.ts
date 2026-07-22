@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { getSession } from "@/lib/session";
+import { checkRateLimit } from "@/lib/rateLimit";
+
+const MAX_ATTEMPTS = 5;
+const WINDOW_MS = 5 * 60 * 1000;
 
 function safeCompare(a: string, b: string) {
   const bufA = Buffer.from(a);
@@ -10,6 +14,15 @@ function safeCompare(a: string, b: string) {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { blocked, retryAfterMs } = checkRateLimit(`admin-login:${ip}`, MAX_ATTEMPTS, WINDOW_MS);
+  if (blocked) {
+    return NextResponse.json(
+      { error: "Too many attempts, please try again later" },
+      { status: 429, headers: { "Retry-After": String(Math.ceil(retryAfterMs / 1000)) } },
+    );
+  }
+
   const { password } = await req.json();
   const adminPassword = process.env.ADMIN_PASSWORD;
 

@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { isAddress } from "viem";
+import { NextResponse } from "next/server";
 import { getGalleryConfig } from "@/lib/config";
 import { getOwnedTokens } from "@/lib/alchemy";
+import { getWalletSession } from "@/lib/walletSession";
 
-export async function GET(req: NextRequest) {
-  const owner = req.nextUrl.searchParams.get("address");
-  if (!owner || !isAddress(owner)) {
-    return NextResponse.json({ error: "Missing or invalid address" }, { status: 400 });
+export async function GET() {
+  const session = await getWalletSession();
+  const owner = session.walletAddress;
+  if (!owner) {
+    return NextResponse.json({ error: "Please connect and verify your wallet" }, { status: 401 });
   }
 
   const config = await getGalleryConfig();

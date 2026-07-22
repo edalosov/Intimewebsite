@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAddress } from "viem";
 import { getGalleryConfig, getActiveQuestion } from "@/lib/config";
 import { getTokenMetadata, isOwnerOfToken } from "@/lib/alchemy";
+import { getWalletSession } from "@/lib/walletSession";
 import { prisma } from "@/lib/db";
 
 export async function GET(
@@ -9,10 +9,11 @@ export async function GET(
   { params }: { params: Promise<{ tokenId: string }> },
 ) {
   const { tokenId } = await params;
-  const address = req.nextUrl.searchParams.get("address");
 
-  if (!address || !isAddress(address)) {
-    return NextResponse.json({ error: "Missing or invalid address" }, { status: 400 });
+  const session = await getWalletSession();
+  const address = session.walletAddress;
+  if (!address) {
+    return NextResponse.json({ error: "Please connect and verify your wallet" }, { status: 401 });
   }
 
   const config = await getGalleryConfig();
@@ -30,7 +31,7 @@ export async function GET(
       getTokenMetadata(config.nftContractAddress, tokenId, config.chainId),
       getActiveQuestion(),
       prisma.answer.findMany({
-        where: { walletAddress: address.toLowerCase(), tokenId },
+        where: { walletAddress: address, tokenId },
         include: { question: true },
         orderBy: { createdAt: "desc" },
       }),

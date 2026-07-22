@@ -12,16 +12,13 @@ type GalleryState =
   | { status: "ready"; tokens: OwnedToken[] }
   | { status: "error"; message: string };
 
-export function ArtworkGrid({ address }: { address: string }) {
+export function ArtworkGrid() {
   const [state, setState] = useState<GalleryState>({ status: "loading" });
 
   useEffect(() => {
     let cancelled = false;
-    // Reset to loading whenever the wallet address changes, before the fetch below resolves.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setState({ status: "loading" });
 
-    fetch(`/api/gallery?address=${address}`)
+    fetch("/api/gallery")
       .then(async (res) => {
         if (!res.ok) throw new Error("Failed to load gallery");
         return res.json() as Promise<{ configured: boolean; tokens: OwnedToken[] }>;
@@ -44,7 +41,7 @@ export function ArtworkGrid({ address }: { address: string }) {
     return () => {
       cancelled = true;
     };
-  }, [address]);
+  }, []);
 
   return (
     <div className="mx-auto max-w-6xl px-6 pb-24 pt-32 sm:px-10 sm:pt-40">

@@ -3,13 +3,20 @@
 import { useAccount } from "wagmi";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 import { ArtworkGrid } from "@/components/ArtworkGrid";
+import { VerifyWalletPrompt } from "@/components/VerifyWalletPrompt";
+import { useWalletVerification } from "@/hooks/useWalletVerification";
 
 export default function Home() {
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
+  const { status, error, verify } = useWalletVerification();
 
-  if (!isConnected || !address) {
+  if (!isConnected) {
     return <WelcomeScreen />;
   }
 
-  return <ArtworkGrid address={address} />;
+  if (status !== "verified") {
+    return <VerifyWalletPrompt status={status} error={error} onVerify={verify} />;
+  }
+
+  return <ArtworkGrid />;
 }

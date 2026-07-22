@@ -10,6 +10,10 @@ export async function verifyAnswerSignature(params: {
   claimedAddress: string;
 }) {
   const message = buildAnswerMessage(params);
-  const recovered = await recoverMessageAddress({ message, signature: params.signature });
-  return recovered.toLowerCase() === params.claimedAddress.toLowerCase();
+  try {
+    const recovered = await recoverMessageAddress({ message, signature: params.signature });
+    return recovered.toLowerCase() === params.claimedAddress.toLowerCase();
+  } catch {
+    return false;
+  }
 }
