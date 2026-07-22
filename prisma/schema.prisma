@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Singleton row (id always 1) holding the live gallery settings: which
+// NFT contract to read ownership from, and which chain it lives on.
+// Editable from /admin without a redeploy.
+model GalleryConfig {
+  id                Int      @id @default(1)
+  nftContractAddress String?
+  chainId           Int      @default(11155111) // Sepolia by default
+  updatedAt         DateTime @updatedAt
+}
+
+// Versioned "question of the year". A new question is inserted (not
+// edited in place) so past answers stay attached to the question they
+// actually answered.
+model Question {
+  id        String   @id @default(cuid())
+  text      String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  answers   Answer[]
+}
+
+// A wallet-signed answer to a question, scoped to a specific owned token.
+model Answer {
+  id            String   @id @default(cuid())
+  walletAddress String
+  tokenId       String
+  questionId    String
+  question      Question @relation(fields: [questionId], references: [id])
+  answerText    String
+  signature     String
+  createdAt     DateTime @default(now())
+
+  @@unique([walletAddress, tokenId, questionId])
+  @@index([walletAddress, tokenId])
+}
