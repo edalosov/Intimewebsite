@@ -23,19 +23,52 @@ export async function setGalleryConfig(data: {
   });
 }
 
+// The question whose window contains right now — never toggled by hand,
+// just whichever scheduled question is currently live. A question outside
+// its window (not yet started, or past its end date) is simply never
+// returned here, which is also what closes it for new answers and display
+// everywhere else in the app.
 export async function getActiveQuestion() {
+  const now = new Date();
   return prisma.question.findFirst({
-    where: { active: true },
-    orderBy: { createdAt: "desc" },
+    where: { startsAt: { lte: now }, endsAt: { gt: now } },
+    orderBy: { startsAt: "desc" },
   });
 }
 
-export async function setActiveQuestion(text: string) {
-  await prisma.question.updateMany({
-    where: { active: true },
-    data: { active: false },
+export async function listQuestions() {
+  return prisma.question.findMany({ orderBy: { startsAt: "desc" } });
+}
+
+export async function createQuestion(data: { text: string; startsAt: Date; endsAt: Date }) {
+  if (data.endsAt <= data.startsAt) {
+    throw new Error("End date must be after the start date");
+  }
+
+  // Keep "which question is current" unambiguous — reject any window that
+  // overlaps an existing one.
+  const overlapping = await prisma.question.findFirst({
+    where: {
+      startsAt: { lt: data.endsAt },
+      endsAt: { gt: data.startsAt },
+    },
   });
-  return prisma.question.create({
-    data: { text, active: true },
-  });
+  if (overlapping) {
+    throw new Error(`Overlaps with an existing question's window: "${overlapping.text}"`);
+  }
+
+  return prisma.question.create({ data });
+}
+
+export async function deleteQuestion(id: string) {
+  const question = await prisma.question.findUnique({ where: { id } });
+  if (!question) {
+    throw new Error("Question not found");
+  }
+  // A question that's already live or past is locked, same philosophy as
+  // never editing a published question in place.
+  if (question.startsAt <= new Date()) {
+    throw new Error("Can't delete a question that has already started");
+  }
+  return prisma.question.delete({ where: { id } });
 }

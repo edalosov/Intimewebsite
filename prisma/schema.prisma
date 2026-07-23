@@ -20,29 +20,39 @@ model GalleryConfig {
   updatedAt         DateTime @updatedAt
 }
 
-// Versioned "question of the year". A new question is inserted (not
-// edited in place) so past answers stay attached to the question they
-// actually answered.
+// A scheduled "question of the year" — each has an explicit availability
+// window (normally exactly one year). The admin can queue future
+// questions ahead of time; whichever question's window contains the
+// current moment is "the" active one, computed on read rather than
+// toggled by hand. Windows are validated not to overlap, so there's
+// never ambiguity about which question is current.
 model Question {
   id        String   @id @default(cuid())
   text      String
-  active    Boolean  @default(true)
+  startsAt  DateTime
+  endsAt    DateTime
   createdAt DateTime @default(now())
   answers   Answer[]
+
+  @@index([startsAt, endsAt])
 }
 
 // A wallet-signed answer to a question, scoped to a specific owned token.
+// Every submission is its own row — a holder can answer the same
+// question more than once, building a real history instead of
+// overwriting a single "current" answer.
 model Answer {
   id            String   @id @default(cuid())
   walletAddress String // the token's actual owner (the vault, if delegated via delegate.xyz)
   signerAddress String? // set when a delegate.xyz-delegated hot wallet signed on the owner's behalf
   tokenId       String
+  tokenName     String // snapshotted at submission time — keeps admin views fast and Alchemy-independent
   questionId    String
   question      Question @relation(fields: [questionId], references: [id])
   answerText    String
   signature     String
   createdAt     DateTime @default(now())
 
-  @@unique([walletAddress, tokenId, questionId])
   @@index([walletAddress, tokenId])
+  @@index([questionId])
 }

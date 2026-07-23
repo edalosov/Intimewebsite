@@ -3,6 +3,7 @@ import { z } from "zod";
 import { isAddress, type Hex } from "viem";
 import { getGalleryConfig, getActiveQuestion } from "@/lib/config";
 import { resolveTokenAccess } from "@/lib/access";
+import { getTokenMetadata } from "@/lib/alchemy";
 import { verifyAnswerSignature } from "@/lib/verifySignature";
 import { prisma } from "@/lib/db";
 
@@ -32,12 +33,17 @@ export async function POST(req: NextRequest) {
   }
 
   let ownerAddress: string | null;
+  let tokenName: string;
   try {
-    const access = await resolveTokenAccess(walletAddress, config.nftContractAddress, tokenId, config.chainId);
+    const [access, token] = await Promise.all([
+      resolveTokenAccess(walletAddress, config.nftContractAddress, tokenId, config.chainId),
+      getTokenMetadata(config.nftContractAddress, tokenId, config.chainId),
+    ]);
     if (!access.allowed || !access.ownerAddress) {
       return NextResponse.json({ error: "You do not own this piece" }, { status: 403 });
     }
     ownerAddress = access.ownerAddress;
+    tokenName = token.name;
   } catch {
     return NextResponse.json({ error: "Failed to reach the NFT provider" }, { status: 502 });
   }
@@ -60,19 +66,14 @@ export async function POST(req: NextRequest) {
   const signer = walletAddress.toLowerCase();
   const signerAddress = signer === ownerAddress ? null : signer;
 
-  const answer = await prisma.answer.upsert({
-    where: {
-      walletAddress_tokenId_questionId: {
-        walletAddress: ownerAddress,
-        tokenId,
-        questionId: question.id,
-      },
-    },
-    update: { answerText, signature, signerAddress },
-    create: {
+  // Always a new row — a holder can answer the same question more than
+  // once, building a history instead of overwriting a prior answer.
+  const answer = await prisma.answer.create({
+    data: {
       walletAddress: ownerAddress,
       signerAddress,
       tokenId,
+      tokenName,
       questionId: question.id,
       answerText,
       signature,

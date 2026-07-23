@@ -18,6 +18,7 @@ export async function GET() {
   const sheet = workbook.addWorksheet("Answers");
   sheet.columns = [
     { header: "Wallet address", key: "wallet", width: 44 },
+    { header: "Artwork", key: "tokenName", width: 30 },
     { header: "Token ID", key: "tokenId", width: 12 },
     { header: "Question", key: "question", width: 50 },
     { header: "Answer", key: "answer", width: 60 },
@@ -28,6 +29,7 @@ export async function GET() {
   for (const answer of answers) {
     sheet.addRow({
       wallet: answer.walletAddress,
+      tokenName: answer.tokenName,
       tokenId: answer.tokenId,
       question: answer.question.text,
       answer: answer.answerText,

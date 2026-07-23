@@ -17,11 +17,13 @@ export function AnswerPanel({
   tokenId,
   questionId,
   questionText,
+  questionEndsAt,
   initialHistory,
 }: {
   tokenId: string;
   questionId: string | null;
   questionText: string | null;
+  questionEndsAt: string | null;
   initialHistory: AnswerHistoryEntry[];
 }) {
   const { address } = useAccount();
@@ -31,8 +33,6 @@ export function AnswerPanel({
   const [history, setHistory] = useState(initialHistory);
   const [status, setStatus] = useState<"idle" | "signing" | "submitting" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
-
-  const alreadyAnswered = history.find((h) => h.question.text === questionText);
 
   async function handleSubmit() {
     if (!address || !questionText || !questionId) return;
@@ -63,7 +63,7 @@ export function AnswerPanel({
       }
 
       const data = await res.json();
-      setHistory((prev) => [data.answer, ...prev.filter((h) => h.id !== data.answer.id)]);
+      setHistory((prev) => [data.answer, ...prev]);
       setAnswerText("");
       setStatus("idle");
     } catch (err) {
@@ -84,13 +84,22 @@ export function AnswerPanel({
             <p className="mt-4 font-display text-lg italic leading-relaxed text-foreground">
               {questionText}
             </p>
+            {questionEndsAt && (
+              <p className="mt-2 text-xs" style={{ color: "var(--foreground-faint)" }}>
+                Answer by {new Date(questionEndsAt).toLocaleDateString(undefined, {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
+            )}
 
             <textarea
               value={answerText}
               onChange={(e) => setAnswerText(e.target.value.slice(0, MAX_LENGTH))}
               maxLength={MAX_LENGTH}
               rows={5}
-              placeholder={alreadyAnswered ? "Edit your answer…" : "Write your answer…"}
+              placeholder="Write your answer…"
               className="mt-6 w-full resize-none rounded-md border bg-transparent px-4 py-3 text-sm leading-relaxed text-foreground outline-none focus:border-[var(--accent)]"
               style={{ borderColor: "var(--border-soft)" }}
             />
