@@ -27,8 +27,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   return (
     <html
@@ -41,6 +43,7 @@ export default function RootLayout({
             <ConnectButton />
           </header>
           <main className="flex-1">{children}</main>
+          {modal}
         </Providers>
       </body>
     </html>

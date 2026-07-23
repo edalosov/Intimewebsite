@@ -21,7 +21,6 @@ export function useWalletVerification() {
   const { signMessageAsync } = useSignMessage();
   const [status, setStatus] = useState<VerificationStatus>("idle");
   const [error, setError] = useState<string | null>(null);
-  const checkedAddress = useRef<string | null>(null);
   const wasConnected = useRef(false);
 
   const verify = useCallback(async () => {
@@ -57,14 +56,10 @@ export function useWalletVerification() {
       // Reset whenever the wallet disconnects, before any fetch below would run.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus("idle");
-      checkedAddress.current = null;
       return;
     }
 
     const normalized = address.toLowerCase();
-    if (checkedAddress.current === normalized) return;
-    checkedAddress.current = normalized;
-
     let cancelled = false;
     setStatus("checking");
 

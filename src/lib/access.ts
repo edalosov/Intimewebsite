@@ -1,6 +1,47 @@
 import { getOwnedTokens, getTokenMetadata, resolveTokenOwner, type OwnedToken } from "@/lib/alchemy";
 import { getDelegatedAccess } from "@/lib/delegateRegistry";
 
+type ResolvedToken = { token: OwnedToken; ownerAddress: string };
+
+// The single source of truth for "what can `walletAddress` see/act on" —
+// both resolveAccessibleTokens (the grid) and resolveTokenAccess (the
+// detail page + answer submission) read from this exact same map, so a
+// piece that appears in the grid can never fail the ownership check on its
+// own detail page. Previously resolveTokenAccess re-derived ownership via a
+// different Alchemy endpoint (getOwnersForNft) than the grid's
+// (getNftsForOwner), and the two occasionally disagreed.
+async function resolveAllAccessible(
+  walletAddress: string,
+  contractAddress: string,
+  chainId: number,
+): Promise<Map<string, ResolvedToken>> {
+  const wallet = walletAddress.toLowerCase();
+  const resolved = new Map<string, ResolvedToken>();
+
+  const direct = await getOwnedTokens(wallet, contractAddress, chainId);
+  for (const token of direct) resolved.set(token.tokenId, { token, ownerAddress: wallet });
+
+  const { delegatedVaults, delegatedTokens } = await getDelegatedAccess(wallet, contractAddress, chainId);
+
+  for (const vault of delegatedVaults) {
+    const vaultTokens = await getOwnedTokens(vault, contractAddress, chainId);
+    for (const token of vaultTokens) {
+      if (!resolved.has(token.tokenId)) resolved.set(token.tokenId, { token, ownerAddress: vault });
+    }
+  }
+
+  for (const { vault, tokenId } of delegatedTokens) {
+    if (resolved.has(tokenId)) continue;
+    // Delegation records don't disappear the instant an NFT changes hands —
+    // re-confirm current ownership before trusting a single-token grant.
+    const owner = await resolveTokenOwner(contractAddress, tokenId, chainId);
+    if (owner !== vault) continue;
+    resolved.set(tokenId, { token: await getTokenMetadata(contractAddress, tokenId, chainId), ownerAddress: vault });
+  }
+
+  return resolved;
+}
+
 // Every token `walletAddress` can see: ones it holds directly, plus ones
 // held by any vault that has delegated this collection (or everything) to
 // it via delegate.xyz.
@@ -9,32 +50,8 @@ export async function resolveAccessibleTokens(
   contractAddress: string,
   chainId: number,
 ): Promise<OwnedToken[]> {
-  const tokens = new Map<string, OwnedToken>();
-
-  const direct = await getOwnedTokens(walletAddress, contractAddress, chainId);
-  for (const token of direct) tokens.set(token.tokenId, token);
-
-  const { delegatedVaults, delegatedTokens } = await getDelegatedAccess(
-    walletAddress,
-    contractAddress,
-    chainId,
-  );
-
-  for (const vault of delegatedVaults) {
-    const vaultTokens = await getOwnedTokens(vault, contractAddress, chainId);
-    for (const token of vaultTokens) tokens.set(token.tokenId, token);
-  }
-
-  for (const { vault, tokenId } of delegatedTokens) {
-    if (tokens.has(tokenId)) continue;
-    // Delegation records don't disappear the instant an NFT changes hands —
-    // re-confirm current ownership before trusting a single-token grant.
-    const owner = await resolveTokenOwner(contractAddress, tokenId, chainId);
-    if (owner !== vault) continue;
-    tokens.set(tokenId, await getTokenMetadata(contractAddress, tokenId, chainId));
-  }
-
-  return [...tokens.values()];
+  const resolved = await resolveAllAccessible(walletAddress, contractAddress, chainId);
+  return [...resolved.values()].map((entry) => entry.token);
 }
 
 export type TokenAccess = { allowed: boolean; ownerAddress: string | null };
@@ -48,18 +65,8 @@ export async function resolveTokenAccess(
   tokenId: string,
   chainId: number,
 ): Promise<TokenAccess> {
-  const wallet = walletAddress.toLowerCase();
-  const ownerAddress = await resolveTokenOwner(contractAddress, tokenId, chainId);
-  if (!ownerAddress) return { allowed: false, ownerAddress: null };
-
-  if (ownerAddress === wallet) {
-    return { allowed: true, ownerAddress };
-  }
-
-  const { delegatedVaults, delegatedTokens } = await getDelegatedAccess(wallet, contractAddress, chainId);
-  const allowed =
-    delegatedVaults.includes(ownerAddress) ||
-    delegatedTokens.some((d) => d.vault === ownerAddress && d.tokenId === tokenId);
-
-  return { allowed, ownerAddress };
+  const resolved = await resolveAllAccessible(walletAddress, contractAddress, chainId);
+  const entry = resolved.get(tokenId);
+  if (!entry) return { allowed: false, ownerAddress: null };
+  return { allowed: true, ownerAddress: entry.ownerAddress };
 }
