@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 import { AnswerPanel, type AnswerHistoryEntry } from "@/components/AnswerPanel";
 import { VerifyWalletPrompt } from "@/components/VerifyWalletPrompt";
 import { useWalletVerification } from "@/hooks/useWalletVerification";
+import { useFallbackImage } from "@/hooks/useFallbackImage";
 import type { OwnedToken } from "@/lib/alchemy";
 
 type DetailState =
@@ -37,7 +38,16 @@ export function ArtworkDetail({
   const { isConnected, status: accountStatus } = useAccount();
   const { status: verification, error: verifyError, verify } = useWalletVerification();
   const [state, setState] = useState<DetailState>({ status: "loading" });
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const imageCandidates = state.status === "ready" ? state.token.images : [];
+  const { src: imageSrc, failed: imageFailed, loaded: imageLoaded, onLoad: onImageLoad, onError: onImageError } =
+    useFallbackImage(imageCandidates, tokenId);
+  const reportedImageFailure = useRef(false);
+
+  useEffect(() => {
+    if (!imageFailed || reportedImageFailure.current) return;
+    reportedImageFailure.current = true;
+    fetch(`/api/art/${tokenId}/refresh-image`, { method: "POST" }).catch(() => {});
+  }, [imageFailed, tokenId]);
 
   useEffect(() => {
     // On a fresh page load (direct link, refresh), wagmi's wallet reconnect
@@ -57,7 +67,7 @@ export function ArtworkDetail({
     // Reset to loading whenever the token changes, before the fetch below resolves.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setState({ status: "loading" });
-    setImageLoaded(false);
+    reportedImageFailure.current = false;
 
     fetch(`/api/art/${tokenId}`)
       .then(async (res) => {
@@ -130,21 +140,22 @@ export function ArtworkDetail({
       className={className}
     >
       <div className="flex w-full items-center justify-center bg-[var(--background-elevated)] p-6 pt-24 lg:w-2/3 lg:p-16">
-        {token.image ? (
+        {imageSrc ? (
           <Image
-            src={token.image}
+            key={imageSrc}
+            src={imageSrc}
             alt={token.name}
             width={1200}
             height={1200}
             unoptimized
-            onLoad={() => setImageLoaded(true)}
-            onError={() => setImageLoaded(true)}
+            onLoad={onImageLoad}
+            onError={onImageError}
             style={{ opacity: imageLoaded ? 1 : 0 }}
             className="max-h-[80vh] w-auto max-w-full rounded-sm object-contain transition-opacity duration-[1100ms] ease-out"
           />
         ) : (
           <div className="text-sm" style={{ color: "var(--foreground-faint)" }}>
-            No image
+            {imageFailed ? "Image unavailable" : "No image"}
           </div>
         )}
       </div>

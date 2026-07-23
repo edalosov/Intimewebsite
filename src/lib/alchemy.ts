@@ -13,10 +13,33 @@ function alchemyForChain(chainId: number) {
   return new Alchemy({ apiKey, network });
 }
 
+function normalizeImageUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (url.startsWith("ipfs://")) {
+    return `https://ipfs.io/ipfs/${url.slice("ipfs://".length)}`;
+  }
+  return url;
+}
+
+// Alchemy's own cached copy of an NFT's image occasionally fails to load
+// even though it returned a URL for it (their caching pipeline attempted
+// it and the result is broken) — so we keep every candidate source, in
+// order of preference, and let the client fall through to the next one on
+// a load failure instead of trusting the first URL alone.
+function candidateImages(nft: {
+  image?: { cachedUrl?: string; originalUrl?: string };
+  raw?: { metadata?: { image?: string } };
+}): string[] {
+  const candidates = [nft.image?.cachedUrl, nft.image?.originalUrl, nft.raw?.metadata?.image]
+    .map(normalizeImageUrl)
+    .filter((url): url is string => url !== null);
+  return [...new Set(candidates)];
+}
+
 export type OwnedToken = {
   tokenId: string;
   name: string;
-  image: string | null;
+  images: string[];
 };
 
 export async function getOwnedTokens(
@@ -32,7 +55,7 @@ export async function getOwnedTokens(
   return response.ownedNfts.map((nft) => ({
     tokenId: nft.tokenId,
     name: nft.name || nft.raw?.metadata?.name || `#${nft.tokenId}`,
-    image: nft.image?.cachedUrl || nft.image?.originalUrl || nft.raw?.metadata?.image || null,
+    images: candidateImages(nft),
   }));
 }
 
@@ -56,6 +79,19 @@ export async function getTokenMetadata(
   return {
     tokenId,
     name: nft.name || nft.raw?.metadata?.name || `#${tokenId}`,
-    image: nft.image?.cachedUrl || nft.image?.originalUrl || nft.raw?.metadata?.image || null,
+    images: candidateImages(nft),
   };
+}
+
+// Asks Alchemy to re-fetch and re-cache this token's metadata/image from
+// the origin. Alchemy enforces its own global 15-minutes-per-token
+// cooldown, so it's safe to call this every time a load failure is
+// detected without adding our own rate limiting on top.
+export async function refreshTokenMetadata(
+  contractAddress: string,
+  tokenId: string,
+  chainId: number,
+): Promise<boolean> {
+  const alchemy = alchemyForChain(chainId);
+  return alchemy.nft.refreshNftMetadata(contractAddress, tokenId);
 }
