@@ -26,7 +26,7 @@ export function Modal({ children }: { children: ReactNode }) {
   }, [router]);
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-8">
+    <div className="fixed inset-0 z-40 flex items-center justify-center p-2 sm:p-5">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -38,7 +38,7 @@ export function Modal({ children }: { children: ReactNode }) {
         initial={{ opacity: 0, scale: 0.97, y: 14 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="no-scrollbar relative z-10 h-[92dvh] w-full max-w-6xl overflow-y-auto rounded-lg border"
+        className="no-scrollbar relative z-10 h-[96dvh] w-full max-w-[1800px] overflow-y-auto rounded-lg border"
         style={{ borderColor: "var(--border-soft)", background: "var(--background)" }}
       >
         <button
