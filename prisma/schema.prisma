@@ -34,7 +34,8 @@ model Question {
 // A wallet-signed answer to a question, scoped to a specific owned token.
 model Answer {
   id            String   @id @default(cuid())
-  walletAddress String
+  walletAddress String // the token's actual owner (the vault, if delegated via delegate.xyz)
+  signerAddress String? // set when a delegate.xyz-delegated hot wallet signed on the owner's behalf
   tokenId       String
   questionId    String
   question      Question @relation(fields: [questionId], references: [id])

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getGalleryConfig, getActiveQuestion } from "@/lib/config";
-import { getTokenMetadata, isOwnerOfToken } from "@/lib/alchemy";
+import { getTokenMetadata } from "@/lib/alchemy";
+import { resolveTokenAccess } from "@/lib/access";
 import { getWalletSession } from "@/lib/walletSession";
 import { prisma } from "@/lib/db";
 
@@ -22,8 +23,13 @@ export async function GET(
   }
 
   try {
-    const isOwner = await isOwnerOfToken(address, config.nftContractAddress, tokenId, config.chainId);
-    if (!isOwner) {
+    const { allowed, ownerAddress } = await resolveTokenAccess(
+      address,
+      config.nftContractAddress,
+      tokenId,
+      config.chainId,
+    );
+    if (!allowed || !ownerAddress) {
       return NextResponse.json({ error: "You do not own this piece" }, { status: 403 });
     }
 
@@ -31,7 +37,7 @@ export async function GET(
       getTokenMetadata(config.nftContractAddress, tokenId, config.chainId),
       getActiveQuestion(),
       prisma.answer.findMany({
-        where: { walletAddress: address, tokenId },
+        where: { walletAddress: ownerAddress, tokenId },
         include: { question: true },
         orderBy: { createdAt: "desc" },
       }),

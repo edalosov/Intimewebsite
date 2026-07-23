@@ -36,15 +36,14 @@ export async function getOwnedTokens(
   }));
 }
 
-export async function isOwnerOfToken(
-  ownerAddress: string,
+export async function resolveTokenOwner(
   contractAddress: string,
   tokenId: string,
   chainId: number,
-): Promise<boolean> {
+): Promise<string | null> {
   const alchemy = alchemyForChain(chainId);
   const owners = await alchemy.nft.getOwnersForNft(contractAddress, tokenId);
-  return owners.owners.some((o) => o.toLowerCase() === ownerAddress.toLowerCase());
+  return owners.owners[0]?.toLowerCase() ?? null;
 }
 
 export async function getTokenMetadata(

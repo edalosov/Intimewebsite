@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getGalleryConfig } from "@/lib/config";
-import { getOwnedTokens } from "@/lib/alchemy";
+import { resolveAccessibleTokens } from "@/lib/access";
 import { getWalletSession } from "@/lib/walletSession";
 
 export async function GET() {
@@ -16,7 +16,7 @@ export async function GET() {
   }
 
   try {
-    const tokens = await getOwnedTokens(owner, config.nftContractAddress, config.chainId);
+    const tokens = await resolveAccessibleTokens(owner, config.nftContractAddress, config.chainId);
     return NextResponse.json({ configured: true, tokens });
   } catch {
     return NextResponse.json({ error: "Failed to reach the NFT provider" }, { status: 502 });
