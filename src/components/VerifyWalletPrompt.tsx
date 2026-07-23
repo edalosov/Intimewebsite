@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { VerificationStatus } from "@/hooks/useWalletVerification";
 
 export function VerifyWalletPrompt({
@@ -14,7 +15,12 @@ export function VerifyWalletPrompt({
   const isChecking = status === "checking" || status === "idle";
 
   return (
-    <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 px-6 text-center">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 px-6 text-center"
+    >
       {isChecking ? (
         <p className="text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
           Checking your wallet…
@@ -36,6 +42,6 @@ export function VerifyWalletPrompt({
           </button>
         </>
       )}
-    </div>
+    </motion.div>
   );
 }

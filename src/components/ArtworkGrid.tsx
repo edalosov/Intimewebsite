@@ -12,6 +12,12 @@ type GalleryState =
   | { status: "ready"; tokens: OwnedToken[] }
   | { status: "error"; message: string };
 
+const fadeIn = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] as const },
+};
+
 export function ArtworkGrid() {
   const [state, setState] = useState<GalleryState>({ status: "loading" });
 
@@ -44,42 +50,42 @@ export function ArtworkGrid() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-6xl px-6 pb-24 pt-32 sm:px-10 sm:pt-40">
+    <div className="mx-auto max-w-7xl px-6 pb-24 pt-32 sm:px-10 sm:pt-40">
       <motion.h2
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
+        transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
         className="font-display text-2xl italic text-foreground sm:text-3xl"
       >
         Your collection
       </motion.h2>
 
       {state.status === "loading" && (
-        <p className="mt-10 text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
+        <motion.p {...fadeIn} className="mt-10 text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
           Gathering your pieces…
-        </p>
+        </motion.p>
       )}
 
       {state.status === "not-configured" && (
-        <p className="mt-10 text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
+        <motion.p {...fadeIn} className="mt-10 text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
           The gallery hasn&apos;t been configured with a collection yet. Check back soon.
-        </p>
+        </motion.p>
       )}
 
       {state.status === "error" && (
-        <p className="mt-10 text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
+        <motion.p {...fadeIn} className="mt-10 text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
           Something went wrong loading your collection. Please try again shortly.
-        </p>
+        </motion.p>
       )}
 
       {state.status === "empty" && (
-        <p className="mt-10 text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
+        <motion.p {...fadeIn} className="mt-10 text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
           This wallet doesn&apos;t hold any pieces from the collection yet.
-        </p>
+        </motion.p>
       )}
 
       {state.status === "ready" && (
-        <div className="mt-12 grid grid-cols-2 gap-x-8 gap-y-14 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-12 grid grid-cols-2 gap-x-10 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
           {state.tokens.map((token, i) => (
             <ArtworkCard key={token.tokenId} token={token} index={i} />
           ))}

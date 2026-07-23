@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useAccount } from "wagmi";
 import { AnswerPanel, type AnswerHistoryEntry } from "@/components/AnswerPanel";
 import { VerifyWalletPrompt } from "@/components/VerifyWalletPrompt";
@@ -36,6 +37,7 @@ export function ArtworkDetail({
   const { isConnected, status: accountStatus } = useAccount();
   const { status: verification, error: verifyError, verify } = useWalletVerification();
   const [state, setState] = useState<DetailState>({ status: "loading" });
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     // On a fresh page load (direct link, refresh), wagmi's wallet reconnect
@@ -55,6 +57,7 @@ export function ArtworkDetail({
     // Reset to loading whenever the token changes, before the fetch below resolves.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setState({ status: "loading" });
+    setImageLoaded(false);
 
     fetch(`/api/art/${tokenId}`)
       .then(async (res) => {
@@ -86,31 +89,46 @@ export function ArtworkDetail({
 
   if (state.status === "loading") {
     return (
-      <div className="flex min-h-full w-full items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="flex min-h-full w-full items-center justify-center"
+      >
         <p className="text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
           Loading…
         </p>
-      </div>
+      </motion.div>
     );
   }
 
   if (state.status === "error") {
     return (
-      <div className="flex min-h-full w-full flex-col items-center justify-center gap-4 px-6 text-center">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="flex min-h-full w-full flex-col items-center justify-center gap-4 px-6 text-center"
+      >
         <p className="text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
           {state.message}
         </p>
         <Link href="/" className="gallery-connect-btn">
           Back to collection
         </Link>
-      </div>
+      </motion.div>
     );
   }
 
   const { token, question, history } = state;
 
   return (
-    <div className={className}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+    >
       <div className="flex w-full items-center justify-center bg-[var(--background-elevated)] p-6 pt-24 lg:w-2/3 lg:p-16">
         {token.image ? (
           <Image
@@ -119,7 +137,10 @@ export function ArtworkDetail({
             width={1200}
             height={1200}
             unoptimized
-            className="max-h-[80vh] w-auto max-w-full rounded-sm object-contain"
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageLoaded(true)}
+            style={{ opacity: imageLoaded ? 1 : 0 }}
+            className="max-h-[80vh] w-auto max-w-full rounded-sm object-contain transition-opacity duration-[1100ms] ease-out"
           />
         ) : (
           <div className="text-sm" style={{ color: "var(--foreground-faint)" }}>
@@ -143,6 +164,6 @@ export function ArtworkDetail({
           initialHistory={history}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }
