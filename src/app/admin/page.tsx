@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { getGalleryConfig, getActiveQuestion } from "@/lib/config";
 import { AdminForm } from "@/components/AdminForm";
+import { AdminAnswersTools } from "@/components/AdminAnswersTools";
 
 export default async function AdminPage() {
   const session = await getSession();
@@ -19,6 +20,9 @@ export default async function AdminPage() {
         initialChainId={config.chainId}
         initialQuestion={question?.text ?? ""}
       />
+      <div className="mt-14 border-t pt-14" style={{ borderColor: "var(--border-soft)" }}>
+        <AdminAnswersTools />
+      </div>
     </div>
   );
 }
