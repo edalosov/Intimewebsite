@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0e0d0b;
-  --background-elevated: #17150f;
-  --foreground: #f2ede2;
-  --foreground-muted: #a89f8d;
-  --foreground-faint: #746c5c;
-  --accent: #cdb583;
-  --border-soft: #2a271f;
+  --background: #ffffff;
+  --background-elevated: #fafaf8;
+  --foreground: #111111;
+  --foreground-muted: #5c5c5c;
+  --foreground-faint: #8f8f8f;
+  --accent: #111111;
+  --border-soft: #e2e2df;
 }
 
-:root[data-theme="light"] {
-  --background: #f5f1e9;
-  --background-elevated: #eee6d6;
-  --foreground: #23201b;
-  --foreground-muted: #6f6656;
-  --foreground-faint: #9a8f7c;
-  --accent: #9c7c3f;
-  --border-soft: #ddd2ba;
+:root[data-theme="dark"] {
+  --background: #0a0a0a;
+  --background-elevated: #141414;
+  --foreground: #f5f5f5;
+  --foreground-muted: #9a9a9a;
+  --foreground-faint: #6b6b6b;
+  --accent: #f5f5f5;
+  --border-soft: #262626;
 }
 
 @theme inline {
@@ -37,6 +37,12 @@ body {
 
 .font-display {
   font-family: var(--font-display), Georgia, serif;
+}
+
+.underline-thick {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.18em;
 }
 
 .gallery-connect-btn {

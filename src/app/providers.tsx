@@ -16,14 +16,14 @@ export function Providers({ children }: { children: ReactNode }) {
   const rainbowKitTheme =
     theme === "light"
       ? lightTheme({
-          accentColor: "#9c7c3f",
-          accentColorForeground: "#f5f1e9",
+          accentColor: "#111111",
+          accentColorForeground: "#ffffff",
           borderRadius: "medium",
           fontStack: "system",
         })
       : darkTheme({
-          accentColor: "#e8e3da",
-          accentColorForeground: "#111111",
+          accentColor: "#f5f5f5",
+          accentColorForeground: "#0a0a0a",
           borderRadius: "medium",
           fontStack: "system",
         });

@@ -38,13 +38,13 @@ export function Modal({ children }: { children: ReactNode }) {
         initial={{ opacity: 0, scale: 0.97, y: 14 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="no-scrollbar relative z-10 h-[96dvh] w-full max-w-[1800px] overflow-y-auto rounded-lg border"
+        className="no-scrollbar relative z-10 h-[96dvh] w-full max-w-[1800px] overflow-y-auto border"
         style={{ borderColor: "var(--border-soft)", background: "var(--background)" }}
       >
         <button
           onClick={() => router.back()}
           aria-label="Close"
-          className="fixed right-5 top-5 z-20 flex h-9 w-9 items-center justify-center rounded-full border text-lg leading-none sm:absolute sm:right-4 sm:top-4"
+          className="fixed right-5 top-5 z-20 flex h-9 w-9 items-center justify-center border text-lg leading-none sm:absolute sm:right-4 sm:top-4"
           style={{
             borderColor: "var(--border-soft)",
             color: "var(--foreground-muted)",

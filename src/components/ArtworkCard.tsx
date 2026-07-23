@@ -24,7 +24,7 @@ export function ArtworkCard({ token, index }: { token: OwnedToken; index: number
     >
       <Link href={`/art/${token.tokenId}`} className="group block">
         <div
-          className="w-full overflow-hidden rounded-md border"
+          className="w-full overflow-hidden border"
           style={{ borderColor: "var(--border-soft)", background: "var(--background-elevated)" }}
         >
           {src ? (

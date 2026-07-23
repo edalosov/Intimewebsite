@@ -151,7 +151,7 @@ export function ArtworkDetail({
             onLoad={onImageLoad}
             onError={onImageError}
             style={{ opacity: imageLoaded ? 1 : 0 }}
-            className="max-h-[80vh] w-auto max-w-full rounded-sm object-contain transition-opacity duration-[1100ms] ease-out"
+            className="max-h-[80vh] w-auto max-w-full object-contain transition-opacity duration-[1100ms] ease-out"
           />
         ) : (
           <div className="text-sm" style={{ color: "var(--foreground-faint)" }}>
@@ -165,7 +165,9 @@ export function ArtworkDetail({
           <Link href="/" className="text-xs underline" style={{ color: "var(--foreground-faint)" }}>
             ← Back to collection
           </Link>
-          <h1 className="mt-4 font-display text-2xl italic text-foreground">{token.name}</h1>
+          <h1 className="mt-4 font-display text-2xl font-bold underline-thick text-foreground sm:text-3xl">
+            {token.name}
+          </h1>
         </div>
 
         <AnswerPanel

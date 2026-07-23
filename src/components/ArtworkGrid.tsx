@@ -55,7 +55,7 @@ export function ArtworkGrid() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-        className="font-display text-2xl italic text-foreground sm:text-3xl"
+        className="font-display text-3xl font-bold underline-thick text-foreground sm:text-4xl"
       >
         Your collection
       </motion.h2>
