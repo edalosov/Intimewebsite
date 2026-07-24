@@ -28,19 +28,24 @@ export function ArtworkCard({ token, index }: { token: OwnedToken; index: number
           style={{ borderColor: "var(--border-soft)", background: "var(--background-elevated)" }}
         >
           {src ? (
-            // Plain <img>, not next/image: these come from arbitrary
+            // motion.img, not next/image: these come from arbitrary
             // external hosts with unknown dimensions, and we want each
-            // piece to keep its real aspect ratio instead of being
-            // cropped into a fixed box.
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            // piece to keep its real aspect ratio instead of being cropped
+            // into a fixed box. Fading via framer-motion's `animate` prop
+            // (rather than a raw CSS transition tied to inline style state)
+            // guarantees the transition actually plays even for a cached
+            // image, where the load event can otherwise fire before the
+            // hidden frame is ever painted.
+            <motion.img
               src={src}
               alt={token.name}
               loading="lazy"
               onLoad={onLoad}
               onError={onError}
-              style={{ opacity: loaded ? 1 : 0 }}
-              className="block w-full transition-opacity duration-[1100ms] ease-out"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: loaded ? 1 : 0 }}
+              transition={{ duration: 1.1, ease: "easeOut" }}
+              className="block w-full"
             />
           ) : (
             <div

@@ -141,18 +141,29 @@ export function ArtworkDetail({
     >
       <div className="flex w-full items-center justify-center bg-[var(--background-elevated)] p-6 pt-24 lg:w-2/3 lg:p-16">
         {imageSrc ? (
-          <Image
+          // Wrapping div carries the fade so framer-motion's `animate`
+          // prop drives it — that's always guaranteed to play a
+          // transition on change, unlike a raw CSS transition tied to
+          // inline style + React state, which can silently collapse into
+          // an instant jump for a cached image.
+          <motion.div
             key={imageSrc}
-            src={imageSrc}
-            alt={token.name}
-            width={1200}
-            height={1200}
-            unoptimized
-            onLoad={onImageLoad}
-            onError={onImageError}
-            style={{ opacity: imageLoaded ? 1 : 0 }}
-            className="max-h-[80vh] w-auto max-w-full object-contain transition-opacity duration-[1100ms] ease-out"
-          />
+            initial={{ opacity: 0 }}
+            animate={{ opacity: imageLoaded ? 1 : 0 }}
+            transition={{ duration: 1.1, ease: "easeOut" }}
+            className="flex max-h-[80vh] max-w-full items-center justify-center"
+          >
+            <Image
+              src={imageSrc}
+              alt={token.name}
+              width={1200}
+              height={1200}
+              unoptimized
+              onLoad={onImageLoad}
+              onError={onImageError}
+              className="max-h-[80vh] w-auto max-w-full object-contain"
+            />
+          </motion.div>
         ) : (
           <div className="text-sm" style={{ color: "var(--foreground-faint)" }}>
             {imageFailed ? "Image unavailable" : "No image"}

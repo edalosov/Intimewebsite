@@ -31,7 +31,12 @@ export function useFallbackImage(candidates: string[], resetKey: string) {
     hasCandidates,
     failed,
     loaded,
-    onLoad: () => setLoaded(true),
+    // Deferred a frame so a state update that lands before the "hidden"
+    // frame has painted (possible for a cached image) can't collapse into
+    // the animation library never seeing the 0 -> 1 change.
+    onLoad: () => {
+      requestAnimationFrame(() => setLoaded(true));
+    },
     onError: () => setIndex((i) => i + 1),
   };
 }
