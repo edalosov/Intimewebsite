@@ -40,7 +40,7 @@ export function ArtworkCard({ token, index }: { token: OwnedToken; index: number
               onLoad={onLoad}
               onError={onError}
               style={{ opacity: loaded ? 1 : 0 }}
-              className="block w-full transition-[opacity,transform] duration-[1100ms] ease-out group-hover:scale-[1.03]"
+              className="block w-full transition-opacity duration-[1100ms] ease-out"
             />
           ) : (
             <div
@@ -52,7 +52,7 @@ export function ArtworkCard({ token, index }: { token: OwnedToken; index: number
           )}
         </div>
         <p
-          className="mt-3 text-center text-sm font-light tracking-wide"
+          className="mt-3 text-center text-sm font-light tracking-wide group-hover:underline"
           style={{ color: "var(--foreground-muted)" }}
         >
           {token.name}
