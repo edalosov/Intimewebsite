@@ -44,7 +44,7 @@ export function Modal({ children }: { children: ReactNode }) {
         <button
           onClick={() => router.back()}
           aria-label="Close"
-          className="fixed right-5 top-5 z-20 flex h-9 w-9 items-center justify-center border text-lg leading-none sm:absolute sm:right-4 sm:top-4"
+          className="fixed right-5 top-20 z-20 flex h-9 w-9 items-center justify-center border text-lg leading-none"
           style={{
             borderColor: "var(--border-soft)",
             color: "var(--foreground-muted)",

@@ -42,6 +42,9 @@ export function ArtworkDetail({
   const { src: imageSrc, failed: imageFailed, loaded: imageLoaded, onLoad: onImageLoad, onError: onImageError } =
     useFallbackImage(imageCandidates, tokenId);
   const reportedImageFailure = useRef(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollEndRef = useRef<HTMLDivElement>(null);
+  const [showScrollHint, setShowScrollHint] = useState(false);
 
   useEffect(() => {
     if (!imageFailed || reportedImageFailure.current) return;
@@ -88,6 +91,24 @@ export function ArtworkDetail({
       cancelled = true;
     };
   }, [tokenId, verification]);
+
+  useEffect(() => {
+    // Only relevant once the panel (and its scroll sentinel) actually
+    // exists — shows a "there's more below" fade whenever the end of the
+    // panel isn't in view yet, and hides it once scrolled into view or if
+    // the content never overflowed in the first place.
+    if (state.status !== "ready") return;
+    const container = scrollContainerRef.current;
+    const sentinel = scrollEndRef.current;
+    if (!container || !sentinel) return;
+
+    const observer = new IntersectionObserver(([entry]) => setShowScrollHint(!entry.isIntersecting), {
+      root: container,
+      threshold: 1,
+    });
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [state.status]);
 
   if (!isConnected) {
     return null;
@@ -172,26 +193,36 @@ export function ArtworkDetail({
       </div>
 
       <div
-        className="no-scrollbar w-full border-t lg:h-full lg:w-1/3 lg:overflow-y-auto lg:border-l lg:border-t-0"
+        className="relative w-full border-t lg:h-full lg:w-1/3 lg:border-l lg:border-t-0"
         style={{ borderColor: "var(--border-soft)" }}
       >
-        <div className="px-6 pt-24 sm:px-10 lg:pt-16">
-          <Link href="/" className="text-xs underline" style={{ color: "var(--foreground-faint)" }}>
-            ← Back to collection
-          </Link>
-          <h1 className="mt-4 font-display text-2xl font-bold text-foreground sm:text-3xl">
-            {token.name}
-          </h1>
+        <div ref={scrollContainerRef} className="no-scrollbar h-full w-full lg:overflow-y-auto">
+          <div className="px-6 pt-24 sm:px-10 lg:pt-16">
+            <Link href="/" className="text-xs underline" style={{ color: "var(--foreground-faint)" }}>
+              ← Back to collection
+            </Link>
+            <h1 className="mt-4 font-display text-2xl font-bold text-foreground sm:text-3xl">
+              {token.name}
+            </h1>
+          </div>
+
+          <AnswerPanel
+            tokenId={token.tokenId}
+            questionId={question?.id ?? null}
+            questionText={question?.text ?? null}
+            questionEndsAt={question?.endsAt ?? null}
+            questionYearNumber={question?.yearNumber ?? null}
+            initialHistory={history}
+          />
+          <div ref={scrollEndRef} className="h-px" />
         </div>
 
-        <AnswerPanel
-          tokenId={token.tokenId}
-          questionId={question?.id ?? null}
-          questionText={question?.text ?? null}
-          questionEndsAt={question?.endsAt ?? null}
-          questionYearNumber={question?.yearNumber ?? null}
-          initialHistory={history}
-        />
+        {showScrollHint && (
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-16 lg:block"
+            style={{ background: "linear-gradient(to bottom, transparent, var(--background))" }}
+          />
+        )}
       </div>
     </motion.div>
   );
