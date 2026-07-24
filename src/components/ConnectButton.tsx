@@ -20,7 +20,7 @@ export function ConnectButton() {
             {(() => {
               if (!connected) {
                 return (
-                  <button onClick={openConnectModal} className="gallery-connect-btn">
+                  <button onClick={openConnectModal} className="gallery-connect-btn gallery-connect-btn--overlay">
                     Connect
                   </button>
                 );
@@ -28,14 +28,17 @@ export function ConnectButton() {
 
               if (chain.unsupported) {
                 return (
-                  <button onClick={openChainModal} className="gallery-connect-btn gallery-connect-btn--warn">
+                  <button
+                    onClick={openChainModal}
+                    className="gallery-connect-btn gallery-connect-btn--overlay gallery-connect-btn--warn"
+                  >
                     Wrong network
                   </button>
                 );
               }
 
               return (
-                <button onClick={openAccountModal} className="gallery-connect-btn">
+                <button onClick={openAccountModal} className="gallery-connect-btn gallery-connect-btn--overlay">
                   {account.displayName}
                 </button>
               );

@@ -67,6 +67,23 @@ body {
   color: var(--accent);
 }
 
+/* Theme toggle + wallet connect sit fixed in the corners at a high
+   z-index, so they stay visible over the modal's dark backdrop as well
+   as the plain page background — a theme-derived color goes unreadable
+   in one of those two cases, so this pins a fixed dark-chip/white-text
+   style that reads fine against either. */
+.gallery-connect-btn--overlay {
+  background: rgba(10, 10, 10, 0.72);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  backdrop-filter: blur(6px);
+}
+
+.gallery-connect-btn--overlay:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
 .gallery-connect-btn--warn {
   border-color: #7a4a3a;
   color: #d99c82;
