@@ -1,10 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { buildAnswerMessage } from "@/lib/answerMessage";
 
 const MAX_LENGTH = 300;
+
+// The panel is a narrower stacked column on mobile (less vertical room
+// once the image above it is accounted for) and a taller side rail on
+// desktop, so how many answers comfortably fit before scrolling differs.
+const PAGE_SIZE_MOBILE = 3;
+const PAGE_SIZE_DESKTOP = 5;
+
+function useAnswersPageSize() {
+  const [pageSize, setPageSize] = useState(PAGE_SIZE_DESKTOP);
+
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 1024px)");
+    const update = () => setPageSize(query.matches ? PAGE_SIZE_DESKTOP : PAGE_SIZE_MOBILE);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  return pageSize;
+}
 
 export type AnswerHistoryEntry = {
   id: string;
@@ -35,6 +55,12 @@ export function AnswerPanel({
   const [history, setHistory] = useState(initialHistory);
   const [status, setStatus] = useState<"idle" | "signing" | "submitting" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+
+  const pageSize = useAnswersPageSize();
+  const totalPages = Math.max(1, Math.ceil(history.length / pageSize));
+  const currentPage = Math.min(page, totalPages - 1);
+  const pagedHistory = history.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
 
   async function handleSubmit() {
     if (!address || !questionText || !questionId) return;
@@ -66,6 +92,7 @@ export function AnswerPanel({
 
       const data = await res.json();
       setHistory((prev) => [data.answer, ...prev]);
+      setPage(0);
       setAnswerText("");
       setStatus("idle");
     } catch (err) {
@@ -145,21 +172,47 @@ export function AnswerPanel({
             Nothing recorded for this piece yet.
           </p>
         ) : (
-          <ul className="mt-4 flex flex-col gap-6">
-            {history.map((entry) => (
-              <li key={entry.id}>
-                <p className="text-xs italic" style={{ color: "var(--foreground-muted)" }}>
-                  {entry.question.text}
-                </p>
-                <p className="mt-1 text-sm font-light leading-relaxed text-foreground">
-                  {entry.answerText}
-                </p>
-                <p className="mt-1 text-xs" style={{ color: "var(--foreground-faint)" }}>
-                  {new Date(entry.createdAt).toLocaleString()}
-                </p>
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="mt-4 flex flex-col gap-6">
+              {pagedHistory.map((entry) => (
+                <li key={entry.id}>
+                  <p className="text-xs italic" style={{ color: "var(--foreground-muted)" }}>
+                    {entry.question.text}
+                  </p>
+                  <p className="mt-1 text-sm font-light leading-relaxed text-foreground">
+                    {entry.answerText}
+                  </p>
+                  <p className="mt-1 text-xs" style={{ color: "var(--foreground-faint)" }}>
+                    {new Date(entry.createdAt).toLocaleString()}
+                  </p>
+                </li>
+              ))}
+            </ul>
+
+            {totalPages > 1 && (
+              <div className="mt-6 flex items-center justify-between text-xs" style={{ color: "var(--foreground-faint)" }}>
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={currentPage === 0}
+                  className="underline disabled:no-underline disabled:opacity-40"
+                >
+                  ← Prev
+                </button>
+                <span>
+                  Page {currentPage + 1} of {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={currentPage === totalPages - 1}
+                  className="underline disabled:no-underline disabled:opacity-40"
+                >
+                  Next →
+                </button>
+              </div>
+            )}
+          </>
         )}
       </section>
     </div>
