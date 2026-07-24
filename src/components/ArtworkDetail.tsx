@@ -29,7 +29,7 @@ type DetailState =
 // fetch/loading/error logic.
 export function ArtworkDetail({
   tokenId,
-  className = "flex min-h-[100dvh] flex-col lg:flex-row",
+  className = "flex min-h-[100dvh] flex-col lg:flex-row lg:items-start",
 }: {
   tokenId: string;
   className?: string;
