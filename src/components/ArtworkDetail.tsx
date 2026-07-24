@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useAccount } from "wagmi";
-import { AnswerPanel, type AnswerHistoryEntry } from "@/components/AnswerPanel";
+import { AnswerPanel, type YearEntry } from "@/components/AnswerPanel";
 import { VerifyWalletPrompt } from "@/components/VerifyWalletPrompt";
 import { useWalletVerification } from "@/hooks/useWalletVerification";
 import { useFallbackImage } from "@/hooks/useFallbackImage";
@@ -18,8 +18,7 @@ type DetailState =
   | {
       status: "ready";
       token: OwnedToken;
-      question: { id: string; text: string; startsAt: string; endsAt: string; yearNumber: number } | null;
-      history: AnswerHistoryEntry[];
+      years: YearEntry[];
     };
 
 // Shared between the full-page route (app/art/[tokenId]/page.tsx, used on
@@ -80,7 +79,7 @@ export function ArtworkDetail({
       })
       .then((data) => {
         if (cancelled) return;
-        setState({ status: "ready", token: data.token, question: data.question, history: data.history });
+        setState({ status: "ready", token: data.token, years: data.years });
       })
       .catch((err) => {
         if (cancelled) return;
@@ -151,7 +150,7 @@ export function ArtworkDetail({
     );
   }
 
-  const { token, question, history } = state;
+  const { token, years } = state;
 
   return (
     <motion.div
@@ -206,14 +205,7 @@ export function ArtworkDetail({
             </h1>
           </div>
 
-          <AnswerPanel
-            tokenId={token.tokenId}
-            questionId={question?.id ?? null}
-            questionText={question?.text ?? null}
-            questionEndsAt={question?.endsAt ?? null}
-            questionYearNumber={question?.yearNumber ?? null}
-            initialHistory={history}
-          />
+          <AnswerPanel tokenId={token.tokenId} years={years} />
           <div ref={scrollEndRef} className="h-px" />
         </div>
 

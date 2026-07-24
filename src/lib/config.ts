@@ -50,6 +50,19 @@ export async function listQuestions() {
   return prisma.question.findMany({ orderBy: { startsAt: "desc" } });
 }
 
+// All scheduled questions in chronological order, each tagged with its
+// "Year N" ordinal and whether its window is done, live, or hasn't opened
+// yet — the data the collector-facing year-tab navigation is built from.
+export async function listQuestionsWithStatus() {
+  const questions = await prisma.question.findMany({ orderBy: { startsAt: "asc" } });
+  const now = new Date();
+  return questions.map((question, index) => ({
+    ...question,
+    yearNumber: index + 1,
+    status: now < question.startsAt ? ("future" as const) : now >= question.endsAt ? ("past" as const) : ("current" as const),
+  }));
+}
+
 export async function createQuestion(data: { text: string; startsAt: Date; endsAt: Date }) {
   if (data.endsAt <= data.startsAt) {
     throw new Error("End date must be after the start date");

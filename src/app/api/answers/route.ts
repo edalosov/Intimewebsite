@@ -6,6 +6,9 @@ import { resolveTokenAccess } from "@/lib/access";
 import { getTokenMetadata } from "@/lib/alchemy";
 import { verifyAnswerSignature } from "@/lib/verifySignature";
 import { prisma } from "@/lib/db";
+import { Prisma } from "@/generated/prisma/client";
+
+const ALREADY_ANSWERED_MESSAGE = "You've already submitted an answer for this year's question.";
 
 const bodySchema = z.object({
   walletAddress: z.string().refine(isAddress),
@@ -66,20 +69,35 @@ export async function POST(req: NextRequest) {
   const signer = walletAddress.toLowerCase();
   const signerAddress = signer === ownerAddress ? null : signer;
 
-  // Always a new row — a holder can answer the same question more than
-  // once, building a history instead of overwriting a prior answer.
-  const answer = await prisma.answer.create({
-    data: {
-      walletAddress: ownerAddress,
-      signerAddress,
-      tokenId,
-      tokenName,
-      questionId: question.id,
-      answerText,
-      signature,
-    },
-    include: { question: true },
+  // One answer per (wallet, token, question) — checked up front for a
+  // clean error message, with the DB's unique constraint as a backstop
+  // against a race between two near-simultaneous submissions.
+  const existing = await prisma.answer.findUnique({
+    where: { walletAddress_tokenId_questionId: { walletAddress: ownerAddress, tokenId, questionId: question.id } },
   });
+  if (existing) {
+    return NextResponse.json({ error: ALREADY_ANSWERED_MESSAGE }, { status: 409 });
+  }
 
-  return NextResponse.json({ answer });
+  try {
+    const answer = await prisma.answer.create({
+      data: {
+        walletAddress: ownerAddress,
+        signerAddress,
+        tokenId,
+        tokenName,
+        questionId: question.id,
+        answerText,
+        signature,
+      },
+      include: { question: true },
+    });
+
+    return NextResponse.json({ answer });
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      return NextResponse.json({ error: ALREADY_ANSWERED_MESSAGE }, { status: 409 });
+    }
+    throw err;
+  }
 }

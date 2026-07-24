@@ -38,9 +38,9 @@ model Question {
 }
 
 // A wallet-signed answer to a question, scoped to a specific owned token.
-// Every submission is its own row — a holder can answer the same
-// question more than once, building a real history instead of
-// overwriting a single "current" answer.
+// Exactly one answer per (wallet, token, question) — once a holder
+// answers a given year's question for a piece, that year is locked in;
+// the panel shows it back read-only rather than allowing a resubmission.
 model Answer {
   id            String   @id @default(cuid())
   walletAddress String // the token's actual owner (the vault, if delegated via delegate.xyz)
@@ -53,6 +53,7 @@ model Answer {
   signature     String
   createdAt     DateTime @default(now())
 
+  @@unique([walletAddress, tokenId, questionId])
   @@index([walletAddress, tokenId])
   @@index([questionId])
 }
