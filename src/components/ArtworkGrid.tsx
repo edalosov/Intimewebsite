@@ -63,7 +63,7 @@ export function ArtworkGrid() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-        className="font-display mt-2 text-base text-foreground sm:text-lg"
+        className="mt-2 text-base tracking-wide text-foreground sm:text-lg"
       >
         Click individually to answer
       </motion.p>
