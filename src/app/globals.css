@@ -13,10 +13,10 @@
 :root[data-theme="dark"] {
   --background: #0a0a0a;
   --background-elevated: #141414;
-  --foreground: #f5f5f5;
+  --foreground: #d4d2cc;
   --foreground-muted: #9a9a9a;
   --foreground-faint: #6b6b6b;
-  --accent: #f5f5f5;
+  --accent: #d4d2cc;
   --border-soft: #262626;
 }
 

@@ -55,9 +55,11 @@ export function ArtworkGrid() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-        className="font-display text-3xl font-bold underline-thick text-foreground sm:text-4xl"
+        className="font-display text-3xl font-bold text-foreground sm:text-4xl"
       >
-        Your collection
+        <span className="underline-thick">Your</span>{" "}
+        <span className="font-normal italic">In Time</span>{" "}
+        <span className="underline-thick">collection:</span>
       </motion.h2>
 
       {state.status === "loading" && (
