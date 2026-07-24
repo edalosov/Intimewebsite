@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { FadeIn } from "@/components/FadeIn";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -34,30 +35,32 @@ export default function AdminLoginPage() {
 
   return (
     <div className="mx-auto flex min-h-[100dvh] max-w-sm flex-col justify-center px-6">
-      <h1 className="font-display text-2xl italic text-foreground">Admin</h1>
-      <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          autoFocus
-          className="rounded-md border bg-transparent px-4 py-3 text-sm text-foreground outline-none focus:border-[var(--accent)]"
-          style={{ borderColor: "var(--border-soft)" }}
-        />
-        {error && (
-          <p className="text-sm" style={{ color: "#d99c82" }}>
-            {error}
-          </p>
-        )}
-        <button
-          type="submit"
-          disabled={submitting}
-          className="gallery-connect-btn mt-2 disabled:opacity-50"
-        >
-          {submitting ? "Checking…" : "Enter"}
-        </button>
-      </form>
+      <FadeIn>
+        <h1 className="font-display text-2xl italic text-foreground">Admin</h1>
+        <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            autoFocus
+            className="rounded-md border bg-transparent px-4 py-3 text-sm text-foreground outline-none focus:border-[var(--accent)]"
+            style={{ borderColor: "var(--border-soft)" }}
+          />
+          {error && (
+            <p className="text-sm" style={{ color: "#d99c82" }}>
+              {error}
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="gallery-connect-btn mt-2 disabled:opacity-50"
+          >
+            {submitting ? "Checking…" : "Enter"}
+          </button>
+        </form>
+      </FadeIn>
     </div>
   );
 }

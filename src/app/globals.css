@@ -1,16 +1,6 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fffffc;
-  --background-elevated: #fafaf7;
-  --foreground: #111111;
-  --foreground-muted: #5c5c5c;
-  --foreground-faint: #8f8f8f;
-  --accent: #111111;
-  --border-soft: #e2e2df;
-}
-
-:root[data-theme="dark"] {
   --background: #0a0a0a;
   --background-elevated: #141414;
   --foreground: #d4d2cc;
@@ -18,6 +8,16 @@
   --foreground-faint: #6b6b6b;
   --accent: #d4d2cc;
   --border-soft: #262626;
+}
+
+:root[data-theme="light"] {
+  --background: #fffffc;
+  --background-elevated: #fafaf7;
+  --foreground: #111111;
+  --foreground-muted: #5c5c5c;
+  --foreground-faint: #8f8f8f;
+  --accent: #111111;
+  --border-soft: #e2e2df;
 }
 
 @theme inline {
@@ -33,6 +33,17 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   transition: background-color 0.7s ease, color 0.7s ease;
+}
+
+/* Every element's colors ease when the theme toggles (or any other
+   color/border state changes), instead of snapping instantly — part of
+   keeping the whole site feeling calm rather than abrupt. More specific
+   rules (buttons, hovers) declare their own transition and take
+   precedence over this default. */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.6s;
+  transition-timing-function: ease;
 }
 
 .font-display {
@@ -58,7 +69,7 @@ body {
   text-transform: uppercase;
   padding: 0.55rem 1.25rem;
   border-radius: 999px;
-  transition: border-color 0.25s ease, color 0.25s ease, background-color 0.25s ease;
+  transition: border-color 0.45s ease, color 0.45s ease, background-color 0.45s ease;
   cursor: pointer;
 }
 

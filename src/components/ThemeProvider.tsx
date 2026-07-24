@@ -7,11 +7,11 @@ type Theme = "dark" | "light";
 const ThemeContext = createContext<{ theme: Theme; toggleTheme: () => void } | null>(null);
 
 // The actual theme is set synchronously before hydration by the inline
-// script in layout.tsx (reading localStorage, defaulting to light) — this
+// script in layout.tsx (reading localStorage, defaulting to dark) — this
 // just mirrors that into React state so components (like the RainbowKit
 // theme in providers.tsx) can react to it.
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
     // Mirrors what the anti-flash inline script (layout.tsx) already set on

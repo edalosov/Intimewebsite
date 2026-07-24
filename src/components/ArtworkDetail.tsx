@@ -18,7 +18,7 @@ type DetailState =
   | {
       status: "ready";
       token: OwnedToken;
-      question: { id: string; text: string; startsAt: string; endsAt: string } | null;
+      question: { id: string; text: string; startsAt: string; endsAt: string; yearNumber: number } | null;
       history: AnswerHistoryEntry[];
     };
 
@@ -175,6 +175,7 @@ export function ArtworkDetail({
           questionId={question?.id ?? null}
           questionText={question?.text ?? null}
           questionEndsAt={question?.endsAt ?? null}
+          questionYearNumber={question?.yearNumber ?? null}
           initialHistory={history}
         />
       </div>

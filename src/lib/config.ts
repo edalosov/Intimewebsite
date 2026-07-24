@@ -30,10 +30,20 @@ export async function setGalleryConfig(data: {
 // everywhere else in the app.
 export async function getActiveQuestion() {
   const now = new Date();
-  return prisma.question.findFirst({
+  const question = await prisma.question.findFirst({
     where: { startsAt: { lte: now }, endsAt: { gt: now } },
     orderBy: { startsAt: "desc" },
   });
+  if (!question) return null;
+
+  // "Year N" for display — the question's 1-based position in chronological
+  // order (by startsAt), not the calendar year, so the first question ever
+  // scheduled is Year 1, the next is Year 2, and so on.
+  const yearNumber = await prisma.question.count({
+    where: { startsAt: { lte: question.startsAt } },
+  });
+
+  return { ...question, yearNumber };
 }
 
 export async function listQuestions() {

@@ -18,12 +18,14 @@ export function AnswerPanel({
   questionId,
   questionText,
   questionEndsAt,
+  questionYearNumber,
   initialHistory,
 }: {
   tokenId: string;
   questionId: string | null;
   questionText: string | null;
   questionEndsAt: string | null;
+  questionYearNumber: number | null;
   initialHistory: AnswerHistoryEntry[];
 }) {
   const { address } = useAccount();
@@ -76,7 +78,7 @@ export function AnswerPanel({
     <div className="flex h-full flex-col gap-10 px-6 py-10 sm:px-10">
       <section>
         <h2 className="text-xs uppercase tracking-widest" style={{ color: "var(--foreground-muted)" }}>
-          Question of the year
+          {questionYearNumber ? `Year ${questionYearNumber}` : "Question of the year"}
         </h2>
 
         {questionText ? (
