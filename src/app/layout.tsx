@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import { Providers } from "./providers";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const display = Fraunces({
+const display = Playfair_Display({
   variable: "--font-display",
   subsets: ["latin"],
   style: ["normal", "italic"],
