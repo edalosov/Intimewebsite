@@ -29,7 +29,7 @@ type DetailState =
 // fetch/loading/error logic.
 export function ArtworkDetail({
   tokenId,
-  className = "flex min-h-[100dvh] flex-col lg:flex-row lg:items-start",
+  className = "flex min-h-[100dvh] flex-col lg:h-[100dvh] lg:flex-row",
 }: {
   tokenId: string;
   className?: string;
@@ -171,7 +171,10 @@ export function ArtworkDetail({
         )}
       </div>
 
-      <div className="w-full border-t lg:w-1/3 lg:border-l lg:border-t-0" style={{ borderColor: "var(--border-soft)" }}>
+      <div
+        className="no-scrollbar w-full border-t lg:h-full lg:w-1/3 lg:overflow-y-auto lg:border-l lg:border-t-0"
+        style={{ borderColor: "var(--border-soft)" }}
+      >
         <div className="px-6 pt-24 sm:px-10 lg:pt-16">
           <Link href="/" className="text-xs underline" style={{ color: "var(--foreground-faint)" }}>
             ← Back to collection

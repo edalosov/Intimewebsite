@@ -8,7 +8,7 @@ export default function ArtDetailModal() {
   const params = useParams<{ tokenId: string }>();
   return (
     <Modal>
-      <ArtworkDetail tokenId={params.tokenId} className="flex h-full flex-col lg:flex-row lg:items-start" />
+      <ArtworkDetail tokenId={params.tokenId} className="flex h-full flex-col lg:flex-row" />
     </Modal>
   );
 }
