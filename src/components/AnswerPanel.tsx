@@ -81,7 +81,7 @@ export function AnswerPanel({
 
         {questionText ? (
           <>
-            <p className="mt-4 font-display text-lg italic leading-relaxed text-foreground">
+            <p className="mt-4 font-display-italic-alt text-lg italic leading-relaxed text-foreground">
               {questionText}
             </p>
             {questionEndsAt && (

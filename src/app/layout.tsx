@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display, PT_Serif } from "next/font/google";
 import Script from "next/script";
 import { Providers } from "./providers";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -23,6 +23,13 @@ const display = Playfair_Display({
   style: ["normal", "italic"],
 });
 
+const displayItalicAlt = PT_Serif({
+  variable: "--font-display-italic-alt",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["italic"],
+});
+
 export const metadata: Metadata = {
   title: "Intime",
   description: "A private gallery for holders.",
@@ -39,7 +46,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${display.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${display.variable} ${displayItalicAlt.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <Script id="theme-init" strategy="beforeInteractive">

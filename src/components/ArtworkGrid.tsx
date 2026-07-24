@@ -55,10 +55,18 @@ export function ArtworkGrid() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-        className="font-display text-3xl font-bold text-foreground sm:text-4xl"
+        className="font-display-italic-alt italic text-3xl text-foreground sm:text-4xl"
       >
-        Your <span className="font-normal italic">In Time</span> collection:
+        In Time
       </motion.h2>
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        className="font-display mt-2 text-base text-foreground sm:text-lg"
+      >
+        Click individually to answer
+      </motion.p>
 
       {state.status === "loading" && (
         <motion.p {...fadeIn} className="mt-10 text-sm font-light" style={{ color: "var(--foreground-faint)" }}>

@@ -39,6 +39,10 @@ body {
   font-family: var(--font-display), Georgia, serif;
 }
 
+.font-display-italic-alt {
+  font-family: var(--font-display-italic-alt), Georgia, serif;
+}
+
 .underline-thick {
   text-decoration: underline;
   text-decoration-thickness: 3px;
