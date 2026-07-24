@@ -176,7 +176,7 @@ export function ArtworkDetail({
           <Link href="/" className="text-xs underline" style={{ color: "var(--foreground-faint)" }}>
             ← Back to collection
           </Link>
-          <h1 className="mt-4 font-display text-2xl font-bold underline-thick text-foreground sm:text-3xl">
+          <h1 className="mt-4 font-display text-2xl font-bold text-foreground sm:text-3xl">
             {token.name}
           </h1>
         </div>

@@ -49,7 +49,7 @@ export function ArtworkCard({ token, index }: { token: OwnedToken; index: number
             />
           ) : (
             <div
-              className="flex aspect-[4/5] w-full items-center justify-center text-xs"
+              className="flex aspect-video w-full items-center justify-center text-xs"
               style={{ color: "var(--foreground-faint)" }}
             >
               {failed ? "Image unavailable" : "No image"}
