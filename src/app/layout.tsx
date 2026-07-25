@@ -3,8 +3,7 @@ import { Geist, Geist_Mono, Playfair_Display, PT_Serif } from "next/font/google"
 import Script from "next/script";
 import { Providers } from "./providers";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { ConnectButton } from "@/components/ConnectButton";
+import { GlobalNav } from "@/components/GlobalNav";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -54,12 +53,7 @@ export default function RootLayout({
         </Script>
         <ThemeProvider>
           <Providers>
-            <header className="fixed top-0 left-0 z-50 p-6 sm:p-8">
-              <ThemeToggle />
-            </header>
-            <header className="fixed top-0 right-0 z-50 p-6 sm:p-8">
-              <ConnectButton />
-            </header>
+            <GlobalNav />
             <main className="flex-1">{children}</main>
             {modal}
           </Providers>

@@ -50,19 +50,14 @@ export function Modal({ children }: { children: ReactNode }) {
           creates a new containing block for position: fixed descendants.
           A fixed child of that panel would end up positioned relative to
           the panel instead of the viewport.
-          z-[60] (above the corner nav's z-50) and top-24 (clear of its
-          full padded box, not just its visible pill) — the wallet/theme
-          header's own hit area extends past the button it wraps, and at
-          equal-or-lower z-index it would win any click in that overlap. */}
+          Sits right in the corner with no button chrome — safe now that
+          GlobalNav hides the wallet/theme buttons on this route, so
+          there's nothing left to collide with here. */}
       <button
         onClick={() => router.back()}
         aria-label="Close"
-        className="fixed right-5 top-24 z-[60] flex h-9 w-9 items-center justify-center border text-lg leading-none"
-        style={{
-          borderColor: "var(--border-soft)",
-          color: "var(--foreground-muted)",
-          background: "var(--background-elevated)",
-        }}
+        className="fixed right-5 top-5 z-[60] text-2xl leading-none transition-colors hover:text-[var(--foreground)]"
+        style={{ color: "var(--foreground-muted)" }}
       >
         ×
       </button>
