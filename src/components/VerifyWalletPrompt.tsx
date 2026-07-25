@@ -27,10 +27,9 @@ export function VerifyWalletPrompt({
         </p>
       ) : (
         <>
-          <p className="font-display text-xl italic text-foreground">Sign to continue</p>
+          <p className="font-display text-xl italic text-foreground">Please sign to continue</p>
           <p className="max-w-xs text-sm font-light" style={{ color: "var(--foreground-muted)" }}>
-            A free signature — no gas, no transaction — proves this is your wallet before we show
-            your collection.
+            A free signature proves this is your wallet
           </p>
           {error && (
             <p className="text-xs" style={{ color: "#d99c82" }}>
