@@ -11,13 +11,13 @@
 }
 
 :root[data-theme="light"] {
-  --background: #fffffc;
-  --background-elevated: #fafaf7;
-  --foreground: #111111;
-  --foreground-muted: #5c5c5c;
-  --foreground-faint: #8f8f8f;
-  --accent: #111111;
-  --border-soft: #e2e2df;
+  --background: #f6f1e6;
+  --background-elevated: #efe7d6;
+  --foreground: #2b2620;
+  --foreground-muted: #6b6254;
+  --foreground-faint: #9c9284;
+  --accent: #2b2620;
+  --border-soft: #ddd2ba;
 }
 
 @theme inline {

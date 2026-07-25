@@ -39,6 +39,9 @@ export function AnswerPanel({ tokenId, years }: { tokenId: string; years: YearEn
   const [error, setError] = useState<string | null>(null);
 
   const current = localYears.find((y) => y.yearNumber === selectedYear) ?? null;
+  const nextYear = current
+    ? localYears.find((y) => y.yearNumber === current.yearNumber + 1)
+    : undefined;
 
   function selectYear(year: YearEntry) {
     if (year.status === "future") return;
@@ -150,6 +153,11 @@ export function AnswerPanel({ tokenId, years }: { tokenId: string; years: YearEn
                   </p>
                   <p className="mt-6 text-xs italic" style={{ color: "var(--foreground-muted)" }}>
                     You&apos;ve already submitted your answer for this year&apos;s question. Thank you for that!
+                  </p>
+                  <p className="mt-2 text-xs" style={{ color: "var(--foreground-faint)" }}>
+                    {nextYear
+                      ? `Next year's question opens ${formatDate(nextYear.startsAt)}.`
+                      : "The next year's question hasn't been scheduled yet."}
                   </p>
                 </>
               ) : current.status === "current" ? (

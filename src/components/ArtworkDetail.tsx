@@ -29,9 +29,16 @@ type DetailState =
 export function ArtworkDetail({
   tokenId,
   className = "flex min-h-[100dvh] flex-col lg:h-[100dvh] lg:flex-row",
+  onBack,
 }: {
   tokenId: string;
   className?: string;
+  // When set (the intercepted modal route), "Back to collection" calls this
+  // instead of navigating to "/" — passed as router.back(), matching the
+  // modal backdrop's click-to-dismiss behavior exactly. The full-page route
+  // has no guaranteed prior history entry (direct link/refresh), so it
+  // leaves this unset and falls back to a plain Link.
+  onBack?: () => void;
 }) {
   const router = useRouter();
   const { isConnected, status: accountStatus } = useAccount();
@@ -143,9 +150,15 @@ export function ArtworkDetail({
         <p className="text-sm font-light" style={{ color: "var(--foreground-faint)" }}>
           {state.message}
         </p>
-        <Link href="/" className="gallery-connect-btn">
-          Back to collection
-        </Link>
+        {onBack ? (
+          <button onClick={onBack} className="gallery-connect-btn">
+            Back to collection
+          </button>
+        ) : (
+          <Link href="/" className="gallery-connect-btn">
+            Back to collection
+          </Link>
+        )}
       </motion.div>
     );
   }
@@ -197,9 +210,19 @@ export function ArtworkDetail({
       >
         <div ref={scrollContainerRef} className="no-scrollbar h-full w-full lg:overflow-y-auto">
           <div className="px-6 pt-24 sm:px-10 lg:pt-16">
-            <Link href="/" className="text-xs underline" style={{ color: "var(--foreground-faint)" }}>
-              ← Back to collection
-            </Link>
+            {onBack ? (
+              <button
+                onClick={onBack}
+                className="text-xs underline"
+                style={{ color: "var(--foreground-faint)" }}
+              >
+                ← Back to collection
+              </button>
+            ) : (
+              <Link href="/" className="text-xs underline" style={{ color: "var(--foreground-faint)" }}>
+                ← Back to collection
+              </Link>
+            )}
             <h1 className="mt-4 font-display text-2xl font-bold text-foreground sm:text-3xl">
               {token.name}
             </h1>

@@ -43,24 +43,6 @@ export function Modal({ children }: { children: ReactNode }) {
       >
         {children}
       </motion.div>
-
-      {/* Deliberately a sibling of the animated panel, not a child of it —
-          framer-motion drives that panel's entrance via an inline CSS
-          transform, and any ancestor with a transform (even at rest)
-          creates a new containing block for position: fixed descendants.
-          A fixed child of that panel would end up positioned relative to
-          the panel instead of the viewport.
-          Sits right in the corner with no button chrome — safe now that
-          GlobalNav hides the wallet/theme buttons on this route, so
-          there's nothing left to collide with here. */}
-      <button
-        onClick={() => router.back()}
-        aria-label="Close"
-        className="fixed right-5 top-5 z-[60] text-2xl leading-none transition-colors hover:text-[var(--foreground)]"
-        style={{ color: "var(--foreground-muted)" }}
-      >
-        ×
-      </button>
     </div>
   );
 }
