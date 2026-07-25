@@ -158,7 +158,7 @@ export function AnswerPanel({ tokenId, years }: { tokenId: string; years: YearEn
                     Answer by {formatDate(current.endsAt)}
                   </p>
                   <p className="mt-1 text-xs" style={{ color: "var(--foreground-faint)" }}>
-                    You can only answer once per year, so make it count.
+                    You may only answer once per year. Make it count!
                   </p>
 
                   <textarea
