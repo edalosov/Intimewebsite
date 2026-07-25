@@ -151,7 +151,8 @@ export function AnswerPanel({ tokenId, years }: { tokenId: string; years: YearEn
                   <p className="mt-2 text-xs" style={{ color: "var(--foreground-faint)" }}>
                     Submitted {new Date(current.answer.createdAt).toLocaleString()}
                   </p>
-                  <p className="mt-6 text-xs italic" style={{ color: "var(--foreground-muted)" }}>
+                  <hr className="mt-6 border-t" style={{ borderColor: "var(--border-soft)" }} />
+                  <p className="mt-6 text-xs" style={{ color: "var(--foreground-muted)" }}>
                     You&apos;ve already submitted your answer for this year&apos;s question. Thank you for that!
                   </p>
                   <p className="mt-2 text-xs" style={{ color: "var(--foreground-faint)" }}>
