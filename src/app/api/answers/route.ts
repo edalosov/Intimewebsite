@@ -8,7 +8,7 @@ import { verifyAnswerSignature } from "@/lib/verifySignature";
 import { prisma } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
 
-const ALREADY_ANSWERED_MESSAGE = "You've already submitted an answer for this year's question.";
+const ALREADY_ANSWERED_MESSAGE = "You've already submitted your answer for this year's question.";
 
 const bodySchema = z.object({
   walletAddress: z.string().refine(isAddress),

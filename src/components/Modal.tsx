@@ -41,20 +41,31 @@ export function Modal({ children }: { children: ReactNode }) {
         className="no-scrollbar relative z-10 h-[96dvh] w-full max-w-[1800px] overflow-y-auto border"
         style={{ borderColor: "var(--border-soft)", background: "var(--background)" }}
       >
-        <button
-          onClick={() => router.back()}
-          aria-label="Close"
-          className="fixed right-5 top-20 z-20 flex h-9 w-9 items-center justify-center border text-lg leading-none"
-          style={{
-            borderColor: "var(--border-soft)",
-            color: "var(--foreground-muted)",
-            background: "var(--background-elevated)",
-          }}
-        >
-          ×
-        </button>
         {children}
       </motion.div>
+
+      {/* Deliberately a sibling of the animated panel, not a child of it —
+          framer-motion drives that panel's entrance via an inline CSS
+          transform, and any ancestor with a transform (even at rest)
+          creates a new containing block for position: fixed descendants.
+          A fixed child of that panel would end up positioned relative to
+          the panel instead of the viewport.
+          z-[60] (above the corner nav's z-50) and top-24 (clear of its
+          full padded box, not just its visible pill) — the wallet/theme
+          header's own hit area extends past the button it wraps, and at
+          equal-or-lower z-index it would win any click in that overlap. */}
+      <button
+        onClick={() => router.back()}
+        aria-label="Close"
+        className="fixed right-5 top-24 z-[60] flex h-9 w-9 items-center justify-center border text-lg leading-none"
+        style={{
+          borderColor: "var(--border-soft)",
+          color: "var(--foreground-muted)",
+          background: "var(--background-elevated)",
+        }}
+      >
+        ×
+      </button>
     </div>
   );
 }

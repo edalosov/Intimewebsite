@@ -149,13 +149,16 @@ export function AnswerPanel({ tokenId, years }: { tokenId: string; years: YearEn
                     Submitted {new Date(current.answer.createdAt).toLocaleString()}
                   </p>
                   <p className="mt-6 text-xs italic" style={{ color: "var(--foreground-muted)" }}>
-                    You&apos;ve already submitted an answer for this year&apos;s question. Thank you for that!
+                    You&apos;ve already submitted your answer for this year&apos;s question. Thank you for that!
                   </p>
                 </>
               ) : current.status === "current" ? (
                 <>
                   <p className="mt-2 text-xs" style={{ color: "var(--foreground-faint)" }}>
                     Answer by {formatDate(current.endsAt)}
+                  </p>
+                  <p className="mt-1 text-xs" style={{ color: "var(--foreground-faint)" }}>
+                    You can only answer once per year, so make it count.
                   </p>
 
                   <textarea
