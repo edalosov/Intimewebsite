@@ -42,6 +42,11 @@ export function AnswerPanel({ tokenId, years }: { tokenId: string; years: YearEn
   const nextYear = current
     ? localYears.find((y) => y.yearNumber === current.yearNumber + 1)
     : undefined;
+  // Future years are already scheduled in the admin, but showing their
+  // number before the question actually opens reads as a broken/missing
+  // question rather than "not yet" — so the tab stays hidden entirely
+  // until that year's question goes live.
+  const visibleYears = localYears.filter((y) => y.status !== "future");
 
   function selectYear(year: YearEntry) {
     if (year.status === "future") return;
@@ -108,30 +113,29 @@ export function AnswerPanel({ tokenId, years }: { tokenId: string; years: YearEn
         </p>
       ) : (
         <>
-          <nav className="flex flex-wrap gap-3">
-            {localYears.map((year) => {
-              const isSelected = year.yearNumber === selectedYear;
-              const isDisabled = year.status === "future";
-              return (
-                <button
-                  key={year.yearNumber}
-                  type="button"
-                  onClick={() => selectYear(year)}
-                  disabled={isDisabled}
-                  aria-current={isSelected}
-                  className="text-sm underline-offset-4 disabled:cursor-not-allowed disabled:no-underline"
-                  style={{
-                    color: isDisabled ? "var(--foreground-faint)" : isSelected ? "var(--foreground)" : "var(--foreground-muted)",
-                    opacity: isDisabled ? 0.4 : 1,
-                    textDecoration: isSelected ? "underline" : "none",
-                    fontWeight: isSelected ? 700 : 400,
-                  }}
-                >
-                  {year.yearNumber}
-                </button>
-              );
-            })}
-          </nav>
+          {visibleYears.length > 1 && (
+            <nav className="flex flex-wrap gap-3">
+              {visibleYears.map((year) => {
+                const isSelected = year.yearNumber === selectedYear;
+                return (
+                  <button
+                    key={year.yearNumber}
+                    type="button"
+                    onClick={() => selectYear(year)}
+                    aria-current={isSelected}
+                    className="text-sm underline-offset-4"
+                    style={{
+                      color: isSelected ? "var(--foreground)" : "var(--foreground-muted)",
+                      textDecoration: isSelected ? "underline" : "none",
+                      fontWeight: isSelected ? 700 : 400,
+                    }}
+                  >
+                    {year.yearNumber}
+                  </button>
+                );
+              })}
+            </nav>
+          )}
 
           {current && (
             <section>
