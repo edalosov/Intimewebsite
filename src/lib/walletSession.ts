@@ -8,7 +8,7 @@ export interface WalletSessionData {
 
 export const walletSessionOptions: SessionOptions = {
   password: sessionSecret,
-  cookieName: "intime_wallet_session",
+  cookieName: "unfinishedpast_wallet_session",
   cookieOptions: {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,

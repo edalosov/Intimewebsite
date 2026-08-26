@@ -1,4 +1,4 @@
-# Intime Gallery
+# Unfinished Past Gallery
 
 A private gallery for an NFT collection. Holders connect their wallet, see the
 pieces they own from a configurable contract, open any piece into a detail

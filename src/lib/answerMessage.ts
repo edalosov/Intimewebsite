@@ -5,7 +5,7 @@ export function buildAnswerMessage(params: {
   timestamp: number;
 }) {
   return [
-    "Intime Gallery — Answer Submission",
+    "Unfinished Past Gallery — Answer Submission",
     "",
     `Token: #${params.tokenId}`,
     `Question: "${params.questionText}"`,

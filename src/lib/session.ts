@@ -8,7 +8,7 @@ export interface SessionData {
 
 export const sessionOptions: SessionOptions = {
   password: sessionSecret,
-  cookieName: "intime_admin_session",
+  cookieName: "unfinishedpast_admin_session",
   cookieOptions: {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,

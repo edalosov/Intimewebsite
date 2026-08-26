@@ -30,7 +30,7 @@ const displayItalicAlt = PT_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Intime",
+  title: "Unfinished Past",
   description: "A private gallery for holders.",
 };
 

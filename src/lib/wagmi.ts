@@ -10,7 +10,7 @@ const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
 // succeeds; the injected-wallet connectors (MetaMask, etc.) work fine
 // regardless, only the WalletConnect QR option needs the real project ID.
 export const wagmiConfig = getDefaultConfig({
-  appName: "Intime Gallery",
+  appName: "Unfinished Past Gallery",
   projectId: projectId && projectId.length > 0 ? projectId : "00000000000000000000000000000000",
   chains: [sepolia, mainnet],
   ssr: true,

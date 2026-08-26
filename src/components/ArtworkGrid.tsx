@@ -57,7 +57,7 @@ export function ArtworkGrid() {
         transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
         className="font-display-italic-alt italic text-3xl text-foreground sm:text-4xl"
       >
-        In Time
+        Unfinished Past
       </motion.h2>
       <motion.p
         initial={{ opacity: 0 }}

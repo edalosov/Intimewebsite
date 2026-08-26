@@ -14,7 +14,7 @@ export type VerificationStatus =
 
 // Proves the connected wallet controls `address` before any personal data
 // (owned NFTs, answer history) is fetched from the server, via a free,
-// gas-less signature — server-side session lives in the `intime_wallet_session`
+// gas-less signature — server-side session lives in the `unfinishedpast_wallet_session`
 // cookie (see src/lib/walletSession.ts).
 export function useWalletVerification() {
   const { address, isConnected } = useAccount();
